@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.netology.cloudstorage.DTO.AuthenticationRequest;
 import ru.netology.cloudstorage.DTO.AuthenticationResponse;
 import ru.netology.cloudstorage.entity.User;
+import ru.netology.cloudstorage.exception.SessionException;
 import ru.netology.cloudstorage.model.Session;
 import ru.netology.cloudstorage.repositiry.UsersRepository;
 import ru.netology.cloudstorage.utility.IdGen;
@@ -41,16 +42,14 @@ public class AuthenticationService {
 
     public boolean logout(String authToken) {
         Session result = sessions.getOrDefault(authToken, null);
-        boolean mark;
         if (result != null) {
             sessions.remove(result.getId(), result);
-            mark = true;
             log.info("User ".concat(authToken).concat(" is logout."));
+            return true;
         } else {
             log.warn("User not found in session.");
-            mark = false;
+            throw new SessionException("User not found in session.");
         }
-        return mark;
     }
     public Session getSession(String authToken) {
         return sessions.get(authToken);

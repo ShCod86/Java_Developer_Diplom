@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.netology.cloudstorage.DTO.AuthenticationRequest;
 import ru.netology.cloudstorage.DTO.AuthenticationResponse;
 import ru.netology.cloudstorage.entity.File;
-import ru.netology.cloudstorage.model.FileData;
+import ru.netology.cloudstorage.DTO.FileData;
 import ru.netology.cloudstorage.repositiry.FileRepository;
 import ru.netology.cloudstorage.service.AuthenticationService;
 

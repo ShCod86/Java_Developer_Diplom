@@ -5,17 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.netology.cloudstorage.entity.File;
 import ru.netology.cloudstorage.entity.User;
+import ru.netology.cloudstorage.exception.DuplicateFileNameException;
 import ru.netology.cloudstorage.exception.FileNotFoundException;
 import ru.netology.cloudstorage.exception.InputDataException;
 import ru.netology.cloudstorage.exception.SessionException;
-import ru.netology.cloudstorage.model.FileData;
+import ru.netology.cloudstorage.DTO.FileData;
 import ru.netology.cloudstorage.model.Session;
 import ru.netology.cloudstorage.repositiry.FileRepository;
 import ru.netology.cloudstorage.repositiry.UsersRepository;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -46,10 +46,9 @@ public class FileService {
     public boolean uploadFile(String authToken, String fileName, String contentType, byte[] content, long fileSize) {
         Long userId = chekUser(authToken);
         File file;
-        boolean mark = true;
         if (fileRepository.findFileByUserIdAndFileName(userId,fileName).isPresent()) {
-            mark = false;
-            log.error("file already exists.");
+            log.error("File already exists.");
+            throw new InputDataException("File already exists.");
         }
         User user = usersRepository.getReferenceById(userId);
         file = File.builder()
@@ -60,7 +59,7 @@ public class FileService {
                 .build();
         fileRepository.save(file);
         log.info("User ".concat(userId.toString()).concat("successfully uploaded the file ").concat(fileName));
-        return mark;
+        return true;
     }
 
     public String deleteFile(String authToken, String fileName) {
@@ -79,15 +78,14 @@ public class FileService {
     public boolean renameFile(String authToken, String fileName, String newFileName) {
         Long userId = chekUser(authToken);
         File file = chekFile(userId, fileName);
-        boolean mark = true;
         if (fileRepository.findFileByUserIdAndFileName(userId, newFileName).isPresent()) {
-            mark = false;
-            log.warn("A file with the same name already exists");
+            log.error("A file with the same name already exists");
+            throw new DuplicateFileNameException("A file with the same name already exists");
         }
         file.setFileName(newFileName);
         fileRepository.save(file);
         log.info("file ".concat(fileName).concat( "successfully renamed. New File name").concat(newFileName));
-        return mark;
+        return true;
     }
     public List<FileData> getFiles(String authToken, int limit) {
         Long userId = chekUser(authToken);

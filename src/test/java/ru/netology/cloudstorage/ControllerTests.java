@@ -19,7 +19,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import ru.netology.cloudstorage.DTO.AuthenticationRequest;
 import ru.netology.cloudstorage.DTO.AuthenticationResponse;
-import ru.netology.cloudstorage.model.FileData;
+import ru.netology.cloudstorage.DTO.FileData;
 import ru.netology.cloudstorage.repositiry.FileRepository;
 import ru.netology.cloudstorage.service.AuthenticationService;
 import ru.netology.cloudstorage.service.FileService;

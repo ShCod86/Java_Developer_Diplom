@@ -1,4 +1,4 @@
-package ru.netology.cloudstorage.model;
+package ru.netology.cloudstorage.DTO;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
