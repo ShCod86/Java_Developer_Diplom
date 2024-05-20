@@ -40,10 +40,7 @@ public class CloudStorageController {
 
     @PostMapping("/logout")
     public ResponseEntity<Object> logout(@RequestHeader("auth-token") String authToken) {
-        boolean mark = authenticationService.logout(authToken);
-        if (!mark) {
-            throw new SessionException("User not found");
-        }
+        authenticationService.logout(authToken);
         return ResponseEntity.ok().body(null);
     }
 
@@ -52,11 +49,12 @@ public class CloudStorageController {
     public ResponseEntity<String> uploadFile(@RequestHeader("auth-token") @NotNull String authToken,
                                              @RequestParam("filename") @NotNull String fileName,
                                              @RequestBody @NotNull MultipartFile file) {
-        boolean mark = fileService.uploadFile(authToken, fileName, file.getContentType(), file.getBytes(), file.getSize());
-        if (!mark) {
+        try {
+        fileService.uploadFile(authToken, fileName, file.getContentType(), file.getBytes(), file.getSize());
+        return ResponseEntity.ok().body("File uploaded");
+        } catch (RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntity.ok().body("File uploaded");
     }
 
     @DeleteMapping("/file")
@@ -90,7 +88,11 @@ public class CloudStorageController {
     @GetMapping("/list")
     public ResponseEntity<List<FileData>> getAllFiles(@RequestHeader("auth-token") @NotNull String authToken,
                                                       @RequestParam("limit") @NotNull int limit) {
-        List<FileData> listFiles = fileService.getFiles(authToken, limit);
-        return ResponseEntity.ok().body(listFiles);
+        List<FileData> fileDataList = fileService.getFiles(authToken, limit).stream()
+                .map(file -> FileData.builder()
+                        .fileName(file.getFileName())
+                        .size(file.getSize())
+                        .build()).toList();
+        return ResponseEntity.ok().body(fileDataList);
     }
 }

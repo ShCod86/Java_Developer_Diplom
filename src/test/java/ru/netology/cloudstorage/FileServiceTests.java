@@ -198,7 +198,8 @@ public class FileServiceTests {
         if (fileRepository.findFileByFileName(fileName2).isEmpty()) {
             fileService.uploadFile(authToken, fileName2, multipartFile2.getContentType(), multipartFile2.getBytes(),  multipartFile2.getSize());
         }
-        List<FileData> actual = fileService.getFiles(authToken, limit);
+        List<File> allFile = fileService.getFiles(authToken, limit);
+        List<FileData> actual = allFile.stream().map(file -> FileData.builder().fileName(file.getFileName()).size(file.getSize()).build()).toList();
         for (FileData file : list) {
             assertTrue(actual.stream().anyMatch(x -> Objects.equals(x.getFileName(), file.getFileName())));
         }

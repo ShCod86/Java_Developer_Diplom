@@ -87,19 +87,14 @@ public class FileService {
         log.info("file ".concat(fileName).concat( "successfully renamed. New File name").concat(newFileName));
         return true;
     }
-    public List<FileData> getFiles(String authToken, int limit) {
+    public List<File> getFiles(String authToken, int limit) {
         Long userId = chekUser(authToken);
         if (limit < 0) {
             log.warn("Wrong limit.");
             throw new InputDataException("Wrong limit.");
         }
         List<File> allFiles = fileRepository.findFilesByUserId(userId);
-        List<FileData> fileDataList = allFiles.stream()
-                .map(file -> FileData.builder()
-                        .fileName(file.getFileName())
-                        .size(file.getSize())
-                        .build()).toList();
         log.info("received a list of user files ".concat(String.valueOf(userId)));
-        return fileDataList;
+        return allFiles;
     }
 }
