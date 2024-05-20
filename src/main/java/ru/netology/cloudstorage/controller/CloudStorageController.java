@@ -78,9 +78,10 @@ public class CloudStorageController {
     public ResponseEntity<String> renameFile(@RequestHeader("auth-token") @NotNull String authToken,
                                              @RequestParam("filename") @NotNull String fileName,
                                              @RequestParam("newFileName") @NotNull String newFileName) {
-        boolean mark = fileService.renameFile(authToken, fileName, newFileName);
-        if (!mark) {
-            throw new DuplicateFileNameException("A file with the same name already exists");
+        try {
+            fileService.renameFile(authToken, fileName, newFileName);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok().body(fileName.concat(" was change to ".concat(newFileName)));
     }
